@@ -75,6 +75,7 @@ window.initMap = () => {
     const marker = new google.maps.Marker({
       title,
       map,
+      icon: 'https://s3.amazonaws.com/walt/marker.png',
       position: {lat, lng},
     })
 

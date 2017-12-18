@@ -8,7 +8,7 @@ const PLACES = [{
     <h1>McCain's Place</h1>
     <p>Come visit us at McCains and blah blah blah</p>
     `,
-    when: [2017, 11, 15, 15, 30, 0], // 12/17/2017 15:30:00 Phoenix time
+    when: [2017, 11, 15, 18, 30, 0], // 12/15/2017 18:30:00 Phoenix time
     lat: 33.5085134,
     lng: -112.0338426,
 },

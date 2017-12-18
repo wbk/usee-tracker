@@ -43,7 +43,7 @@ window.initMap = () => {
   const futureLocations = PLACES.filter(p => !isBefore(p.when, now))
   
   const map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 17,
+    zoom: 16,
     center: currentLocation,
     mapTypeId: 'terrain'
   })

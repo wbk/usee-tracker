@@ -13,9 +13,6 @@ const PLACES = places.map(place => ({
 // All of the date were parsed as UTC; convert to PHX time for ease of use
 PLACES.forEach(place => place.when.setHours(place.when.getHours() - 7)) 
 
-console.dir(PLACES);
-debugger;
-
 window.initMap = () => {
   const now = new Date()
 

@@ -1,0 +1,8 @@
+### Places
+
+are in src/places.js
+
+### To build (requires node and npm):
+
+npm install
+npm run build

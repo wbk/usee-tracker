@@ -11,7 +11,7 @@ const PLACES = places.map(place => ({
 }))
 
 // All of the date were parsed as UTC; convert to PHX time for ease of use
-PLACES.forEach(place => place.when.setHours(place.when.getHours() - 7)) 
+PLACES.forEach(place => place.when.setHours(place.when.getHours() + 7))
 
 window.initMap = () => {
   const now = new Date()
@@ -25,7 +25,10 @@ window.initMap = () => {
   if (prevLocationIndex === -1) {
     prevLocationIndex = 0
   }
-  
+  if (nextLocationIndex === (PLACES.length - 1)) {
+    prevLocationIndex = nextLocationIndex
+  }
+
   const prevLocation = PLACES[prevLocationIndex]
   const nextLocation = PLACES[nextLocationIndex]
 
@@ -35,13 +38,13 @@ window.initMap = () => {
     : 0
 
   const currentLocation = {
-    lat: interpolate (prevLocation.lat, nextLocation.lat, diffPercent),
-    lng: interpolate (prevLocation.lng, nextLocation.lng, diffPercent),
+    lat: interpolate(prevLocation.lat, nextLocation.lat, diffPercent),
+    lng: interpolate(prevLocation.lng, nextLocation.lng, diffPercent),
   }
 
   const pastLocations = PLACES.filter(p => isBefore(p.when, now))
   const futureLocations = PLACES.filter(p => !isBefore(p.when, now))
-  
+
   const map = new google.maps.Map(document.getElementById('map'), {
     zoom: 16,
     center: currentLocation,
@@ -49,16 +52,16 @@ window.initMap = () => {
   })
 
   const pastLocationLine = new google.maps.Polyline({
-    path: pastLocations.map(({lat, lng}) => ({lat, lng})).concat([currentLocation]),
+    path: pastLocations.map(({ lat, lng }) => ({ lat, lng })).concat([currentLocation]),
     geodesic: true,
     strokeColor: '#00FF00',
     strokeOpacity: 1.0,
     strokeWeight: 4
   })
   pastLocationLine.setMap(map)
-  
+
   const futureLocationLine = new google.maps.Polyline({
-    path: [currentLocation].concat(futureLocations.map(({lat, lng}) => ({lat, lng}))),
+    path: [currentLocation].concat(futureLocations.map(({ lat, lng }) => ({ lat, lng }))),
     geodesic: true,
     strokeColor: '#FF0000',
     strokeOpacity: 1.0,
@@ -66,22 +69,44 @@ window.initMap = () => {
   })
   futureLocationLine.setMap(map)
 
+
+  new google.maps.Marker({
+    title: "Follow Santa as he recruits Phoenix politicians",
+    map,
+    icon: {
+      url: 'https://s3.amazonaws.com/walt/santa.png?2',
+      origin: new google.maps.Point(0, 0),
+      size: new google.maps.Size(40, 39),
+      anchor: new google.maps.Point(18, 17)
+    },
+    position: { lat: currentLocation.lat, lng: currentLocation.lng },
+    zIndex: 1
+  })
+
   // Create Markers
-  PLACES.forEach(({lat, lng, title, content}) => {
-    const popup = new google.maps.InfoWindow({
-      content
-    })
+  let openPopup = null
 
-    const marker = new google.maps.Marker({
-      title,
-      map,
-      icon: 'https://s3.amazonaws.com/walt/marker.png',
-      position: {lat, lng},
-    })
+  PLACES.forEach(({ lat, lng, title, content }, i) => {
+    setTimeout(() => {
+      const popup = new google.maps.InfoWindow({
+        content
+      })
 
-    marker.addListener('click', function() {
-      popup.open(map, marker);
-    });    
+      const marker = new google.maps.Marker({
+        title,
+        map,
+        icon: 'https://s3.amazonaws.com/walt/marker.png',
+        position: { lat, lng },
+        animation: google.maps.Animation.DROP,
+        zIndex: 2
+      })
+
+      marker.addListener('click', function () {
+        openPopup && openPopup.close()
+        popup.open(map, marker)
+        openPopup = popup
+      });
+    }, 750 + i * 100)
   })
 }
 
